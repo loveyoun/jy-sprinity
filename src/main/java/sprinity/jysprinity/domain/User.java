@@ -18,7 +18,8 @@ public class User {
     private String password;
     private String name;
     private String email;
-
+    
+    //아마 id getter setter은 없어도 될 듯
     public Long getId() {
         return id;
     }
