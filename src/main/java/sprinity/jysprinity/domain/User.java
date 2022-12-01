@@ -70,4 +70,12 @@ public class User {
                 '}';
     }
 
+    public void update(User newUser) {
+        //???newUser.getUserId()를 안했는데, 필드값을 가져올 수 있네????
+        this.userId=newUser.userId;
+        this.password=newUser.password;
+        this.name=newUser.name;
+        this.email=newUser.email;
+    }
+
 }

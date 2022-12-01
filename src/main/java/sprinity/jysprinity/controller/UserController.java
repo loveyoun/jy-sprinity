@@ -3,10 +3,7 @@ package sprinity.jysprinity.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sprinity.jysprinity.domain.User;
 import sprinity.jysprinity.repository.UserRepository;
 
@@ -21,9 +18,13 @@ public class UserController {
     private UserRepository userRepository;
     //private List<User> users = new ArrayList<User>(); list collection
 
+    @GetMapping("/form")    //static.user.form.html이 아니라, template.user.form.html 접근 위해서
+    public String form(){
+        return "/user/form";
+    }
+    
     /*서버로 데이터 받은 것*/
-    @PostMapping("")    //RequestMapping 때문에
-    //@PostMapping("/user/create")
+    @PostMapping("")    //RequestMapping 때문에. @PostMapping("/user/create")
     //@GetMapping("/create"). 보안 issue
     public String create_f(User user){
     //public String create(String userId, String password, String name, String email)
@@ -38,10 +39,29 @@ public class UserController {
     @GetMapping("") //Post랑 Get이니까 "/users" 같아도 됨
     //@GetMapping("/user/list") 회원목록 받아오는 거니까 get. localhost:8080/user/list 로 url을 받으면,
     //list 이름 다 같아도 되네???
-    public String list_f(Model model){
+    public String list_f(Model model){  //html로 보내기 위해서 model이 필요하다
         //model.addAttribute("users", users);
         model.addAttribute("users", userRepository.findAll());
         return "/user/list";
+    }
+
+    /*
+    **회원정보 수정**
+    */
+    @GetMapping("/{id}/form")  //url에서 id값 얻어와야 한다. @PathVariable 과 같은 이름
+    //이럴 떄, html의 css의 경로를 절대경로로 바꾸어 주어야 한다
+    public String updateForm(@PathVariable Long id, Model model){
+        //User user = userRepository.findOne(id);
+        User user = userRepository.findById(id).get(); //Optional
+        model.addAttribute("user", user);
+        return "/user/updateForm";
+    }
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id, User newUser){
+        User user = userRepository.findById(id).get();
+        user.update(newUser);
+        userRepository.save(user); //id가 없으면 insert, 있으면 update
+        return "redirect:/users";
     }
 
 }
