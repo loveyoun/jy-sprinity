@@ -32,7 +32,7 @@ public class UserController {
         User user = userRepository.findByUserId(userId);
         if (user == null) return "redirect:/users/login";
         if (!password.equals(user.getPassword())) return "redirect:/users/login";
-        session.setAttribute("user", user);
+        session.setAttribute("sessionUser", user); //model data key랑 달라야함
         return "redirect:/";
     }
 
@@ -41,7 +41,7 @@ public class UserController {
      * */
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.removeAttribute("user");
+        session.removeAttribute("sessionUser");
         return "redirect:/";
     }
 
@@ -77,17 +77,29 @@ public class UserController {
      */
     @GetMapping("/{id}/form")  //url에서 id값 얻어와야 한다. @PathVariable 과 같은 이름
     //이럴 떄, html의 css의 경로를 절대경로로 바꾸어 주어야 한다
-    public String updateForm(@PathVariable Long id, Model model) {
+    public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
+        /* plus) 로그인 해야지 수정버튼 누를 수 있게*/
+        Object tempUser = session.getAttribute("sessionUser");
+        if (tempUser == null) return "redirect:/users/login";
+        /* !!보안 plus) 로그인하면 다른 사용자 /users/{{id}}/form 으로 들어갈 수 있다*/
+        User sessionUser = (User) tempUser;
+        if (!id.equals(sessionUser.getId())) throw new IllegalStateException("자신의 정보만 수정할 수 있습니다");
+
         //User user = userRepository.findOne(id);
-        User user = userRepository.findById(id).get(); //Optional
+        User user = userRepository.findById(id).get(); //Optional. OR id -> sessionUser.getId()
         model.addAttribute("user", user);
         return "/user/updateForm";
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable Long id, User newUser) {
+    public String update(@PathVariable Long id, User updatedUser, HttpSession session) {
+        Object tempUser = session.getAttribute("sessionUser");
+        if (tempUser == null) return "redirect:/users/login";
+        User sessionUser = (User) tempUser;
+        if (!id.equals(sessionUser.getId())) throw new IllegalStateException("자신의 정보만 수정할 수 있습니다");
+
         User user = userRepository.findById(id).get();
-        user.update(newUser);
+        user.update(updatedUser);
         userRepository.save(user); //id가 없으면 insert, 있으면 update
         return "redirect:/users";
     }
