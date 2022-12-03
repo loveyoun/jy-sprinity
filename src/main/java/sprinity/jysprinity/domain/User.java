@@ -20,6 +20,10 @@ public class User {
     private String email;
     
     //아마 id getter setter은 없어도 될 듯
+    public boolean matchId(Long newId){
+        //if(newId == null) return false;
+        return newId.equals(id);
+    }
     public Long getId() {
         return id;
     }
@@ -36,6 +40,10 @@ public class User {
         this.userId = userId;
     }
 
+    public boolean matchPassword(String newPassword){
+        //if(newPassword == null) return false;
+        return newPassword.equals(password);
+    }
     public String getPassword() {
         return password;
     }

@@ -54,7 +54,7 @@
         <div class="collapse navbar-collapse" id="navbar-collapse2">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a href="../index.html">Posts</a></li>
-                {{^sessionUser}} <!--로그인 안했을 때-->
+                {{^sessionUser}} <!--로그인 안했을 때. HttpSession에 저장한 key 값이 sessionUser임-->
                 <li><a href="/users/login" role="button">로그인</a></li>
                 <li><a href="/users/form" role="button">회원가입</a></li> <!--"../user/form.html" static 으로 접근할 때-->
                 {{/sessionUser}}
